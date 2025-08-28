@@ -1,4 +1,3 @@
-# server.py
 import numpy as np
 from mcp.server.fastmcp import FastMCP, Image
 from PIL import Image as PILImage
@@ -20,14 +19,50 @@ def _get_robot_description(robot: MujocoRobot) -> str:
     )
 
 
-def _side_by_side_images(images: list[np.ndarray]) -> Image:
-    """Concatenate multiple images side by side."""
-    concat_image: PILImage = PILImage.new(
-        "RGB", (images[0].shape[1] * len(images), images[0].shape[0])
-    )
+def _get_images_as_grid(
+    images: list[np.ndarray],
+) -> Image:
+    """Concatenate multiple images in a grid layout with WebP compression."""
+    import math
+
+    num_images = len(images)
+    if num_images == 0:
+        raise ValueError("No images provided")
+
+    MAX_IMAGES = 9
+    if num_images > MAX_IMAGES:
+        raise ValueError(f"Too many images: {num_images} > {MAX_IMAGES}")
+
+    # Calculate grid dimensions for a more square layout
+    if num_images <= 4:
+        cols = min(2, num_images)
+        rows = math.ceil(num_images / cols)
+    else:
+        # For 5+ images, prefer 3 columns for better aspect ratio
+        cols = 3
+        rows = math.ceil(num_images / cols)
+
+    # Get dimensions of individual images
+    img_height, img_width = images[0].shape[:2]
+
+    # Create the grid canvas
+    grid_width = cols * img_width
+    grid_height = rows * img_height
+    concat_image: PILImage = PILImage.new("RGB", (grid_width, grid_height))
+
+    # Place images in grid
     for i, image in enumerate(images):
-        concat_image.paste(PILImage.fromarray(image), (i * image.shape[1], 0))
-    return Image(data=concat_image.tobytes(), format="png")
+        row = i // cols
+        col = i % cols
+        x_pos = col * img_width
+        y_pos = row * img_height
+        concat_image.paste(PILImage.fromarray(image), (x_pos, y_pos))
+
+    from io import BytesIO
+
+    buffer = BytesIO()
+    concat_image.save(buffer, format="WEBP", quality=80, optimize=True)
+    return Image(data=buffer.getvalue(), format="webp")
 
 
 def set_robot_state(state: list[float]) -> Image:
@@ -35,7 +70,7 @@ def set_robot_state(state: list[float]) -> Image:
     robot.set_state(state)
     images = robot.render()
     robot.reset()  # to explicitly make server stateless
-    return _side_by_side_images(images)
+    return _get_images_as_grid(images)
 
 
 def register_robot_tools(mcp: FastMCP, robot: MujocoRobot) -> None:
