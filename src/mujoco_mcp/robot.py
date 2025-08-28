@@ -137,7 +137,7 @@ class MujocoRobot:
     @property
     def joint_bounds(self) -> dict[str, tuple[float, float]]:
         return {
-            joint: (low, high)
+            joint: (low.item(), high.item())
             for joint, (low, high) in zip(self._joints, self._joint_ranges)
         }
 
