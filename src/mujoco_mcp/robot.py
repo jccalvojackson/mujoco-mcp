@@ -88,12 +88,12 @@ class MujocoRobot:
         logger.info(f"Actuators: {self._actuators}")
         self._actuator_ids = np.asarray(
             [self._model.actuator(actuator).id for actuator in self._actuators]
-        )  # TODO: not quite right
+        )
         self._joints = _get_component_names(self._model, "joint")
         logger.info(f"Joints: {self._joints}")
         self._joint_ids = np.asarray(
             [self._model.joint(joint).id for joint in self._joints]
-        )  # TODO: not quite right
+        )
         self._joint_ranges = np.stack(
             [self._model.joint(joint).range for joint in self._joints]
         )
