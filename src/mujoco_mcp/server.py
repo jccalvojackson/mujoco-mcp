@@ -81,6 +81,15 @@ def register_robot_tools(mcp: FastMCP, robot: MujocoRobot) -> None:
 
 register_robot_tools(mcp, robot)
 
+
+@mcp.prompt(title="Achieve pose")
+def achieve_pose() -> str:
+    return """You are provided with one or more images of the pose of a real robot.
+    Your task is to achieve this pose by setting the robot state of a simulated robot.
+    Iterate adjusting the pose until you achieve the pose in the images.
+    """
+
+
 # Main execution block - this is required to run the server
 if __name__ == "__main__":
     mcp.run()
