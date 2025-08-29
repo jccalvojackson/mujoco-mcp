@@ -58,6 +58,86 @@ The server exposes a single tool and prompt for AI agents:
 - Provides detailed instructions for iterative pose matching
 - Guides the AI through analysis, planning, and refinement steps
 
+## 🤖 Supported Robot Models
+
+The MuJoCo MCP server supports **50 different robot models** that are compatible with MuJoCo's MJCF format. The default robot is `so_arm100_mj_description` (a 6-DOF robotic arm).
+
+### Configuration
+
+You can change the robot model by setting the environment variable:
+
+```bash
+export MUJOCO_MCP_ROBOT_NAME=<robot_name>
+```
+
+Or create a `.env` file in the project root:
+
+```env
+MUJOCO_MCP_ROBOT_NAME=<robot_name>
+```
+
+### Available Robot Models
+
+<details>
+<summary><strong>Click to see all 50 supported robot models</strong></summary>
+
+| # | Robot Name | Type |
+|---|------------|------|
+| 1 | `a1_mj_description` | Quadruped |
+| 2 | `ability_hand_mj_description` | Hand |
+| 3 | `adam_lite_mj_description` | Humanoid |
+| 4 | `aliengo_mj_description` | Quadruped |
+| 5 | `allegro_hand_mj_description` | Hand |
+| 6 | `aloha_mj_description` | Bimanual |
+| 7 | `anymal_b_mj_description` | Quadruped |
+| 8 | `anymal_c_mj_description` | Quadruped |
+| 9 | `apollo_mj_description` | Humanoid |
+| 10 | `arx_l5_mj_description` | Arm |
+| 11 | `booster_t1_mj_description` | Humanoid |
+| 12 | `cassie_mj_description` | Biped |
+| 13 | `cf2_mj_description` | Drone |
+| 14 | `dynamixel_2r_mj_description` | Arm |
+| 15 | `elf2_mj_description` | Humanoid |
+| 16 | `fr3_mj_description` | Arm |
+| 17 | `g1_mj_description` | Humanoid |
+| 18 | `gen3_mj_description` | Arm |
+| 19 | `go1_mj_description` | Quadruped |
+| 20 | `go2_mj_description` | Quadruped |
+| 21 | `h1_mj_description` | Humanoid |
+| 22 | `iiwa14_mj_description` | Arm |
+| 23 | `jvrc_mj_description` | Humanoid |
+| 24 | `leap_hand_mj_description` | Hand |
+| 25 | `low_cost_robot_arm_mj_description` | Arm |
+| 26 | `mujoco_humanoid_mj_description` | Humanoid |
+| 27 | `n1_mj_description` | Humanoid |
+| 28 | `op3_mj_description` | Humanoid |
+| 29 | `panda_mj_description` | Arm |
+| 30 | `piper_mj_description` | Arm |
+| 31 | `robotiq_2f85_mj_description` | Gripper |
+| 32 | `robotiq_2f85_v4_mj_description` | Gripper |
+| 33 | `rsk_mj_description` | Arm |
+| 34 | `sawyer_mj_description` | Arm |
+| 35 | `shadow_dexee_mj_description` | Hand |
+| 36 | `shadow_hand_mj_description` | Hand |
+| 37 | `skydio_x2_mj_description` | Drone |
+| 38 | `so_arm100_mj_description` | Arm (Default) |
+| 39 | `so_arm101_mj_description` | Arm |
+| 40 | `spot_mj_description` | Quadruped |
+| 41 | `stretch_3_mj_description` | Mobile manipulator |
+| 42 | `stretch_mj_description` | Mobile manipulator |
+| 43 | `talos_mj_description` | Humanoid |
+| 44 | `ur10e_mj_description` | Arm |
+| 45 | `ur5e_mj_description` | Arm |
+| 46 | `viper_mj_description` | Arm |
+| 47 | `widow_mj_description` | Arm |
+| 48 | `xarm7_mj_description` | Arm |
+| 49 | `yam_mj_description` | Humanoid |
+| 50 | `z1_mj_description` | Arm |
+
+</details>
+
+> **Note:** Each robot model has different joint configurations and ranges. The MCP tool will automatically adapt to the selected robot's joint structure and provide appropriate bounds information to AI agents.
+
 ## 🛠️ Development Roadmap
 
 ### 🚨 Critical
@@ -75,7 +155,7 @@ The server exposes a single tool and prompt for AI agents:
 - [x] ✅ Set up GitHub Actions for CI/CD (testing, linting, formatting)
 
 ### ✨ Nice-to-Have
-- [ ] 🔄 Multi-robot support for different models
+- [x] ✅ Multi-robot support for different models
 - [ ] 🔄 Web interface for interactive robot control
 
 ## 🤝 Contributing
