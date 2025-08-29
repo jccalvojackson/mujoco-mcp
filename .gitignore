@@ -284,3 +284,6 @@ config.ini
 secrets.json
 .env.local
 .env.production
+
+# Reference directory
+references/
