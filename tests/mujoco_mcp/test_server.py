@@ -15,7 +15,7 @@ async def test_list_tools():
         result = await client_session.list_tools()
         assert len(result.tools) == EXPECTED_NUMBER_OF_TOOLS
 
-        expected_tool_name = "set_robot_state"
+        expected_tool_name = "set_robot_state_and_render"
         assert result.tools[0].name == expected_tool_name
 
         joint_bounds = robot.joint_bounds
@@ -23,10 +23,10 @@ async def test_list_tools():
 
 
 @pytest.mark.anyio
-async def test_call_set_robot_state():
+async def test_call_set_robot_state_and_render():
     async with create_session(mujoco_mcp_server._mcp_server) as client_session:
         result: CallToolResult = await client_session.call_tool(
-            "set_robot_state",
+            "set_robot_state_and_render",
             arguments={"state": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]},
         )
         assert len(result.content) == 1

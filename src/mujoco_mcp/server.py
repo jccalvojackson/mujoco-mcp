@@ -5,7 +5,7 @@ from PIL import Image as PILImage
 from mujoco_mcp.config import config
 from mujoco_mcp.robot import MujocoRobot
 
-robot = MujocoRobot(config.robot_name)
+robot = MujocoRobot(config.robot_mjcf_path)
 
 mujoco_mcp_server = FastMCP("Robot State Control")
 
@@ -79,7 +79,7 @@ def achieve_pose() -> str:
     return """You are a robot pose matching assistant. Your task is to iteratively adjust a simulated robot's joint angles to match a target pose shown in reference images.
 
 ## Your Tools:
-- `set_robot_state(state)`: Sets joint positions and returns a 4-view grid image of the simulated robot
+- `set_robot_state_and_render(state)`: Sets joint positions and returns a 4-view grid image of the simulated robot
 
 ## Strategy:
 1. **Analyze**: Compare the reference image(s) with the current simulated robot pose
@@ -96,9 +96,9 @@ def achieve_pose() -> str:
 
 ## Example workflow:
 1. Observe reference pose and current simulated pose
-2. Set initial estimate: `set_robot_state([initial_values...])`
+2. Set initial estimate: `set_robot_state_and_render([initial_values...])`
 3. Compare results, identify differences
-4. Adjust specific joints: `set_robot_state([adjusted_values...])`
+4. Adjust specific joints: `set_robot_state_and_render([adjusted_values...])`
 5. Repeat until satisfied with match
 
 Begin by analyzing the reference image(s) and making your first pose estimate."""
