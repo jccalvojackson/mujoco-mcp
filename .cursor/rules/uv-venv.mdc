@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+globs: *.py
 description: Use uv for virtual environment management
 ---
 
