@@ -154,9 +154,9 @@ class MujocoRobot:
 
     def set_state(self, state: np.ndarray):
         """Set the robot state."""
-        if len(state) != len(self._joints):
+        if len(state) != len(self.joint_names):
             raise ValueError(
-                f"State must have {len(self._joints)} values, got {len(state)}"
+                f"State must have {len(self.joint_names)} values, got {len(state)}"
             )
         state = np.clip(state, self._joint_ranges[:, 0], self._joint_ranges[:, 1])
         self._data.qpos[self._joint_ids] = state
