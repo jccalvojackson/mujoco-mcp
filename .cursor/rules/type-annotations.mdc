@@ -6,7 +6,7 @@ globs: *.py
 Always use built-in type annotations instead of typing module imports:
 
 - Use `list` instead of `typing.List`
-- Use `tuple` instead of `typing.Tuple` 
+- Use `tuple` instead of `typing.Tuple`
 - Use `dict` instead of `typing.Dict`
 - Use `set` instead of `typing.Set`
 - Use `frozenset` instead of `typing.FrozenSet`
