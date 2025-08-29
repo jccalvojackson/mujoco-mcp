@@ -84,10 +84,32 @@ register_robot_tools(mcp, robot)
 
 @mcp.prompt(title="Achieve pose")
 def achieve_pose() -> str:
-    return """You are provided with one or more images of the pose of a real robot.
-    Your task is to achieve this pose by setting the robot state of a simulated robot.
-    Iterate adjusting the pose until you achieve the pose in the images.
-    """
+    return """You are a robot pose matching assistant. Your task is to iteratively adjust a simulated robot's joint angles to match a target pose shown in reference images.
+
+## Your Tools:
+- `set_robot_state(state)`: Sets joint positions and returns a 4-view grid image of the simulated robot
+
+## Strategy:
+1. **Analyze**: Compare the reference image(s) with the current simulated robot pose
+2. **Plan**: Identify which joints need adjustment and estimate the direction/magnitude
+3. **Iterate**: Make incremental adjustments, typically 0.1-0.3 radians per step
+4. **Refine**: Continue until the poses closely match across all camera angles
+
+## Key Guidelines:
+- Start with large structural joints before fine-tuning end-effector orientation
+- Use the n-camera grid to verify pose accuracy from multiple angles
+- Make conservative adjustments to avoid overshooting
+- Pay attention to both joint positions and overall arm configuration
+- The robot resets to home position after each state setting, so provide complete joint states
+
+## Example workflow:
+1. Observe reference pose and current simulated pose
+2. Set initial estimate: `set_robot_state([initial_values...])`
+3. Compare results, identify differences
+4. Adjust specific joints: `set_robot_state([adjusted_values...])`
+5. Repeat until satisfied with match
+
+Begin by analyzing the reference image(s) and making your first pose estimate."""
 
 
 # Main execution block - this is required to run the server
