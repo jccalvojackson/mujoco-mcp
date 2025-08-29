@@ -169,7 +169,8 @@ class MujocoRobot:
             )
         """Apply the action to the robot."""
         # TODO: apply action during an amount of time on a loop
-        action = np.clip(action, self._joint_ranges[:, 0], self._joint_ranges[:, 1])
+        lower_bounds, upper_bounds = self._joint_ranges.T
+        action = np.clip(action, lower_bounds, upper_bounds)
         self._data.ctrl[self._actuator_ids] = action
         mujoco.mj_step(self._model, self._data)
 
