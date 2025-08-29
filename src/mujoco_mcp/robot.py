@@ -1,11 +1,11 @@
 import re
 import sys
-from typing import Optional
+from typing import Annotated, Optional
 
 import mujoco
 import numpy as np
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
@@ -14,7 +14,7 @@ logger.add(sys.stderr, level="DEBUG")
 class RenderConfig(BaseModel):
     width: int = 480
     height: int = 320
-    num_cameras: int = 4
+    num_cameras: Annotated[int, Field(ge=1, le=4)] = 4
 
 
 def get_cameras(
@@ -35,8 +35,8 @@ def get_cameras(
     mujoco.mj_forward(model, data)
 
     # Find key points: base, elbow, end-effector
-    base_pos = data.xpos[0]  # Assuming base is body 0
-    end_effector_pos = data.xpos[-1]  # Last body is typically end-effector
+    base_pos: np.ndarray = data.xpos[0]  # Assuming base is body 0
+    end_effector_pos: np.ndarray = data.xpos[-1]  # Last body is typically end-effector
 
     # Compute arm center and span for framing
     arm_center = (base_pos + end_effector_pos) / 2
@@ -52,7 +52,7 @@ def get_cameras(
     ]
 
     cameras = []
-    for i, config in enumerate(camera_configs[:num_cameras]):
+    for config in camera_configs[:num_cameras]:
         cam = mujoco.MjvCamera()
         cam.lookat = arm_center
         cam.distance = distance
@@ -93,28 +93,28 @@ class MujocoRobot:
         self._model.vis.global_.offheight = render_config.height
         self._data = mujoco.MjData(self._model)
         # TODO: try getting list of valid components names from mujoco or create enum
-        self._actuators = _get_component_names(self._model, "actuator")
+        self._actuators: list[str] = _get_component_names(self._model, "actuator")
         logger.info(f"Actuators: {self._actuators}")
-        self._actuator_ids = np.asarray(
+        self._actuator_ids: np.ndarray = np.asarray(
             [self._model.actuator(actuator).id for actuator in self._actuators]
         )
-        self._joints = _get_component_names(self._model, "joint")
+        self._joints: list[str] = _get_component_names(self._model, "joint")
         logger.info(f"Joints: {self._joints}")
-        self._joint_ids = np.asarray(
+        self._joint_ids: np.ndarray = np.asarray(
             [self._model.joint(joint).id for joint in self._joints]
         )
-        self._joint_ranges = np.stack(
+        self._joint_ranges: np.ndarray = np.stack(
             [self._model.joint(joint).range for joint in self._joints]
         )
-        logger.info(f"Joint ranges: {self._joint_ranges}")
+        logger.info(f"Joint bounds: {self.joint_bounds}")
         self._viewer: Optional[mujoco.Renderer] = None
-        self._render_config = render_config
+        self._render_config: RenderConfig = render_config
         self._cameras: list[mujoco.MjvCamera] = get_cameras(
             model=self._model,
             data=self._data,
             num_cameras=render_config.num_cameras,
         )
-        self._home_position = home_position or np.zeros(len(self._joints))
+        self._home_position: np.ndarray = home_position or np.zeros(len(self._joints))
 
     def render(self) -> list[np.ndarray]:
         if self._viewer is None:
