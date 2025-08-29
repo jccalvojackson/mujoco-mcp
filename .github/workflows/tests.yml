@@ -28,4 +28,4 @@ jobs:
     - name: Run tests
       run: |
         source .venv/bin/activate
-        pytest tests/ -v
+        MUJOCO_GL=egl pytest tests/ -v
