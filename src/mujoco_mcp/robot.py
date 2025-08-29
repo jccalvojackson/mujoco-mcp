@@ -17,38 +17,47 @@ class RenderConfig(BaseModel):
     num_cameras: int = 4
 
 
-def get_cameras_for_link(
+def get_cameras(
     model: mujoco.MjModel,
     data: mujoco.MjData,
-    link_id: int,
     *,
-    num_cameras: int,
+    num_cameras: int = 4,
 ) -> list[mujoco.MjvCamera]:
-    # target point to frame: world-space position of the geom
-    mujoco.mj_step(model, data)
-    lookat = np.asarray(data.geom_xpos[link_id].copy(), dtype=float)
+    """
+    Get cameras using photography-inspired angles.
+    """
+    MAXIMUM_NUMBER_OF_CAMERAS = 4
+    if num_cameras > MAXIMUM_NUMBER_OF_CAMERAS:
+        raise ValueError(
+            f"Maximum number of cameras is {MAXIMUM_NUMBER_OF_CAMERAS}, got {num_cameras}"
+        )
+    # Get current arm configuration for adaptive positioning
+    mujoco.mj_forward(model, data)
 
-    # estimate a reasonable camera distance from geom size
-    # Use L2 norm of geom size as a proxy for bounding radius
-    geom_size = np.asarray(model.geom_size[link_id], dtype=float)
-    bounding_radius = float(np.linalg.norm(geom_size))
-    logger.debug(f"Bounding radius: {bounding_radius}")
-    distance = max(0.6, 5.0 * bounding_radius)
+    # Find key points: base, elbow, end-effector
+    base_pos = data.xpos[0]  # Assuming base is body 0
+    end_effector_pos = data.xpos[-1]  # Last body is typically end-effector
 
-    cameras: list[mujoco.MjvCamera] = []
-    if num_cameras <= 0:
-        return cameras
+    # Compute arm center and span for framing
+    arm_center = (base_pos + end_effector_pos) / 2
+    arm_span = np.linalg.norm(end_effector_pos - base_pos)
+    distance = max(1.0, 2.0 * arm_span)  # Closer than current implementation
 
-    # Simple single ring: evenly spaced azimuths at a fixed elevation above horizon
-    fixed_elevation_deg = -30.0
-    azimuths = np.linspace(0.0, 360.0, num_cameras, endpoint=False)
+    # Photography-inspired camera angles
+    camera_configs = [
+        {"azimuth": 45, "elevation": -15, "name": "front-right"},  # Classic 3/4 view
+        {"azimuth": 135, "elevation": -15, "name": "back-right"},  # Opposite 3/4 view
+        {"azimuth": 0, "elevation": -25, "name": "front"},  # Straight front
+        {"azimuth": 90, "elevation": -5, "name": "side"},  # Pure side view
+    ]
 
-    for az in azimuths:
+    cameras = []
+    for i, config in enumerate(camera_configs[:num_cameras]):
         cam = mujoco.MjvCamera()
-        cam.lookat = lookat
+        cam.lookat = arm_center
         cam.distance = distance
-        cam.azimuth = float(az)
-        cam.elevation = fixed_elevation_deg
+        cam.azimuth = config["azimuth"]
+        cam.elevation = config["elevation"]
         cameras.append(cam)
 
     return cameras
@@ -100,10 +109,9 @@ class MujocoRobot:
         logger.info(f"Joint ranges: {self._joint_ranges}")
         self._viewer: Optional[mujoco.Renderer] = None
         self._render_config = render_config
-        self._cameras: list[mujoco.MjvCamera] = get_cameras_for_link(
+        self._cameras: list[mujoco.MjvCamera] = get_cameras(
             model=self._model,
             data=self._data,
-            link_id=link_base,
             num_cameras=render_config.num_cameras,
         )
         self._home_position = home_position or np.zeros(len(self._joints))
