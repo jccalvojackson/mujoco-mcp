@@ -1,12 +1,31 @@
 [project]
 name = "mujoco-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for AI-controlled robot pose matching using MuJoCo physics simulation"
 readme = "README.md"
 authors = [
     { name = "JC", email = "jccalvojackson@gmail.com" }
 ]
 requires-python = ">=3.12"
+keywords = ["robotics", "mujoco", "simulation", "mcp", "ai", "pose-control", "computer-vision"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jccalvojackson/mujoco-mcp"
+"Repository" = "https://github.com/jccalvojackson/mujoco-mcp"
+"Bug Tracker" = "https://github.com/jccalvojackson/mujoco-mcp/issues"
+
 dependencies = [
     "loguru>=0.7.3",
     "mcp[cli]>=1.13.1",
