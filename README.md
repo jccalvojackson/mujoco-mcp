@@ -60,7 +60,7 @@ The server exposes a single tool and prompt for AI agents:
 - [ ] 🔄 Implement proper error handling and input validation
 
 ### ⚠️ Important
-- [ ] 🔄 Add pre-commit hooks, ruff formatting
+- [x] ✅ Add pre-commit hooks, ruff formatting
 - [ ] 🔄 Set up GitHub Actions for CI/CD (testing, linting, formatting)
 
 ### ✨ Nice-to-Have
