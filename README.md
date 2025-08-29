@@ -49,7 +49,7 @@ uv run mcp dev src/mujoco_mcp/server.py
 
 The server exposes a single tool and prompt for AI agents:
 
-**Tool:** `set_robot_state(state: list[float])`
+**Tool:** `set_robot_state_and_render(state: list[float])`
 - **Input:** Joint positions as a list of floats (6 values for so_arm100)
 - **Output:** WebP image grid showing 4 camera viewpoints of the robot
 - **Behavior:** Stateless - robot resets to home position after each call
