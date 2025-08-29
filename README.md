@@ -25,16 +25,25 @@ An MCP (Model Context Protocol) server that enables AI systems to control a simu
    cd mujoco-mcp
    ```
 
-2. **Set up virtual environment and install dependencies:**
-   ```bash
-   uv sync
-   source .venv/bin/activate
-   ```
+You can install it in your favourite MCP client (cursor, etc.) with the follwing config:
 
-3. **Run the MCP server:**
-   ```bash
-   python -m mujoco_mcp.server
-   ```
+```json
+    "mujoco-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/path/to/mujoco-mcp/",
+        "/path/to/mujoco-mcp/src/mujoco_mcp/server.py"
+      ]
+    },
+```
+
+Alternatively, you can test it with the MCP inspector:
+
+```bash
+uv run mcp dev src/mujoco_mcp/server.py
+```
 
 ### Usage with MCP-enabled AI Agents
 
@@ -58,12 +67,12 @@ The server exposes a single tool and prompt for AI agents:
 - [x] ✅ Added type hints and comprehensive docstrings
 - [x] ✅ Updated project metadata with proper description and keywords
 - [ ] 🔄 Create examples/ directory with demo scripts and sample images
-- [ ] 🔄 Add basic unit tests for core functionality
+- [x] ✅ Add basic unit tests for core functionality
 - [ ] 🔄 Implement proper error handling and input validation
 
 ### ⚠️ Important
 - [x] ✅ Add pre-commit hooks, ruff formatting
-- [ ] 🔄 Set up GitHub Actions for CI/CD (testing, linting, formatting)
+- [x] ✅ Set up GitHub Actions for CI/CD (testing, linting, formatting)
 
 ### ✨ Nice-to-Have
 - [ ] 🔄 Multi-robot support for different models
@@ -108,8 +117,8 @@ source .venv/bin/activate
 # Run tests (when available)
 python -m pytest
 
-# Run the server for testing
-python -m mujoco_mcp.server
+# Run the server inspector for testing
+uv run mcp dev src/mujoco_mcp/server.py
 ```
 
 All contributions, no matter how small, are valued and appreciated!
