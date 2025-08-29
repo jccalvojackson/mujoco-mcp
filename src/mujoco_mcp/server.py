@@ -7,7 +7,7 @@ from mujoco_mcp.robot import MujocoRobot
 
 robot = MujocoRobot(so_arm100_mj_description.MJCF_PATH)
 
-mcp = FastMCP("Robot State Control")
+mujoco_mcp_server = FastMCP("Robot State Control")
 
 
 def _get_robot_description(robot: MujocoRobot) -> str:
@@ -79,10 +79,10 @@ def register_robot_tools(mcp: FastMCP, robot: MujocoRobot) -> None:
     mcp.tool(description=description)(set_robot_state)
 
 
-register_robot_tools(mcp, robot)
+register_robot_tools(mujoco_mcp_server, robot)
 
 
-@mcp.prompt(title="Achieve pose")
+@mujoco_mcp_server.prompt(title="Achieve pose")
 def achieve_pose() -> str:
     return """You are a robot pose matching assistant. Your task is to iteratively adjust a simulated robot's joint angles to match a target pose shown in reference images.
 
@@ -114,4 +114,4 @@ Begin by analyzing the reference image(s) and making your first pose estimate.""
 
 # Main execution block - this is required to run the server
 if __name__ == "__main__":
-    mcp.run()
+    mujoco_mcp_server.run(transport="stdio")
