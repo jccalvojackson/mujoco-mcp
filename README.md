@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Pre-commit](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/pre-commit.yml)
+[![Tests](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/tests.yml)
 
 An MCP (Model Context Protocol) server that enables AI systems to control a simulated robot arm in MuJoCo to match target poses from reference images.
 
