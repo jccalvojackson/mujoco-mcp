@@ -17,14 +17,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Python and uv
       uses: ./.github/actions/setup-python-uv
-        
+
     - name: Run tests
       run: |
         source .venv/bin/activate
