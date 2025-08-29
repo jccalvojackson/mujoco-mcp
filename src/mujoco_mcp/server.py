@@ -1,11 +1,11 @@
 import numpy as np
 from mcp.server.fastmcp import FastMCP, Image
 from PIL import Image as PILImage
-from robot_descriptions import so_arm100_mj_description
 
+from mujoco_mcp.config import config
 from mujoco_mcp.robot import MujocoRobot
 
-robot = MujocoRobot(so_arm100_mj_description.MJCF_PATH)
+robot = MujocoRobot(config.robot_name)
 
 mujoco_mcp_server = FastMCP("Robot State Control")
 
@@ -65,21 +65,13 @@ def _get_images_as_grid(
     return Image(data=buffer.getvalue(), format="webp")
 
 
-def set_robot_state(state: list[float]) -> Image:
+@mujoco_mcp_server.tool(description=_get_robot_description(robot))
+def set_robot_state_and_render(state: list[float]) -> Image:
     """Set robot state and return rendered images."""
     robot.set_state(state)
     images = robot.render()
     robot.reset()  # to explicitly make server stateless
     return _get_images_as_grid(images)
-
-
-def register_robot_tools(mcp: FastMCP, robot: MujocoRobot) -> None:
-    """Register robot control tools with the MCP server."""
-    description = _get_robot_description(robot)
-    mcp.tool(description=description)(set_robot_state)
-
-
-register_robot_tools(mujoco_mcp_server, robot)
 
 
 @mujoco_mcp_server.prompt(title="Achieve pose")
