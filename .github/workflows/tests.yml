@@ -23,10 +23,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+
     - name: Setup Python and uv
       uses: ./.github/actions/setup-python-uv
 
     - name: Run tests
       run: |
         source .venv/bin/activate
-        MUJOCO_GL=egl LIBGL_ALWAYS_SOFTWARE=true pytest tests/ -v
+        # see https://github.com/google-deepmind/mujoco/issues/1629
+        # Use xvfb-run to provide virtual display for MuJoCo
+        xvfb-run -a -s "-screen 0 1024x768x24 -ac +extension GLX +render -noreset" pytest tests/ -v
