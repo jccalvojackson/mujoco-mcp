@@ -29,4 +29,4 @@ jobs:
     - name: Run tests
       run: |
         source .venv/bin/activate
-        MUJOCO_GL=egl pytest tests/ -v
+        MUJOCO_GL=osmesa pytest tests/ -v

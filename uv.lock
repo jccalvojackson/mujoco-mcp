@@ -379,9 +379,6 @@ dependencies = [
 dev = [
     { name = "pre-commit" },
     { name = "pytest" },
-]
-test = [
-    { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-mock" },
 ]
@@ -400,9 +397,6 @@ requires-dist = [
 dev = [
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pytest", specifier = ">=8.4.1" },
-]
-test = [
-    { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
     { name = "pytest-mock", specifier = ">=3.12.0" },
 ]
