@@ -7,12 +7,18 @@ on:
       - '**.py'
       - 'pyproject.toml'
       - 'uv.lock'
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+      - '.github/actions/**'
   pull_request:
     branches: [ main ]
     paths:
       - '**.py'
       - 'pyproject.toml'
       - 'uv.lock'
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+      - '.github/actions/**'
   workflow_dispatch:
 
 jobs:
