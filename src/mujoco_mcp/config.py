@@ -18,7 +18,11 @@ class Config(BaseSettings):
         "so_arm100_mj_description"
     )
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="MUJOCO_MCP_")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="MUJOCO_MCP_",
+        extra="ignore",
+    )
 
     @property
     def robot_mjcf_path(self) -> str:
