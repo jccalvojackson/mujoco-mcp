@@ -282,7 +282,7 @@ def achieve_pose() -> str:
 ## Critical Pose Analysis Points:
 - **End-effector orientation**: Pay special attention to the final orientation of grippers/tools
 - **Joint sign sensitivity**: Small sign changes in orientation joints can dramatically change end-effector direction
-- **Axis-specific behavior**: 
+- **Axis-specific behavior**:
   - Pitch joints (Y-axis): Control up/down tilt - positive/negative can flip orientation dramatically
   - Roll joints (X-axis): Control twist/rotation around arm axis - small changes affect grip orientation
   - Yaw/Rotation joints (Z-axis): Control left/right swing - major structural changes
@@ -292,7 +292,7 @@ def achieve_pose() -> str:
 
 ## Pose Matching Tips:
 - **Compact poses**: Try extreme values for large-range joints (near their limits)
-- **Extended poses**: Use moderate values for structural joints  
+- **Extended poses**: Use moderate values for structural joints
 - **Different orientations**: Focus on joints later in the kinematic chain - they control end-effector orientation
 - **Structural impact**: Focus on the largest-range joints first - they typically create the most dramatic pose changes
 - **Orientation mismatch**: If structure looks right but orientation is wrong, adjust end-effector joints (later in chain)
@@ -302,9 +302,9 @@ def achieve_pose() -> str:
 1. **Structure first, orientation second**: Get the overall arm configuration right before fine-tuning end-effector orientation
 2. **Identify orientation joints**: Focus on joints later in the kinematic chain with pitch/roll/yaw axes
 3. **Systematic sign testing**: If orientation is wrong, try flipping the sign of orientation joints (±0.5 to ±2.0 rad changes)
-4. **Axis-aware adjustments**: 
+4. **Axis-aware adjustments**:
    - Wrong up/down angle → adjust pitch joints
-   - Wrong twist/rotation → adjust roll joints  
+   - Wrong twist/rotation → adjust roll joints
    - Wrong left/right direction → adjust yaw/rotation joints
 5. **Range bracketing**: Try both extremes of an orientation joint's range to see the full effect
 
