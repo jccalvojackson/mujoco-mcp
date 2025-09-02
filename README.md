@@ -5,11 +5,20 @@
 [![Pre-commit](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/pre-commit.yml)
 [![Tests](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/jccalvojackson/mujoco-mcp/actions/workflows/tests.yml)
 
-An MCP (Model Context Protocol) server that enables AI systems to control a simulated robot arm in MuJoCo to match target poses from reference images.
+An MCP (Model Context Protocol) server that enables AI systems to control the joint positions of a simulated robot arm in MuJoCo. It includes a robot kinematics informed prompt for the task of matching the joint configuration of reference images from a real robot.
 
-## 🎯 Problem Statement
+For example, after prompting cursor's claude 4 agent to match these photos:
 
-...
+![Reference images](assets/test_15efc020ad_0.png)![Reference images](assets/test_b59c1bd94b_0.png)
+
+It first tried this joint configuration:
+
+![Initial joint configuration](assets/first_joint_state.png)
+
+And it finally stopped iterating on the fifth try claiming success with a confidence that only an LLM can muster. While its final joint configuration is quite close to the reference images, is not quite there.
+
+![Success](assets/success.png)
+![Final joint configuration](assets/final_joint_state.png)
 
 ## 🚀 Quick Start
 
