@@ -147,25 +147,11 @@ MUJOCO_MCP_ROBOT_NAME=<robot_name>
 
 > **Note:** Each robot model has different joint configurations and ranges. The MCP tool will automatically adapt to the selected robot's joint structure and provide appropriate bounds information to AI agents.
 
-## 🛠️ Development Roadmap
+## 🛠️ TODO
 
-### 🚨 Critical
-- [x] ✅ Enhanced README with comprehensive documentation
-- [x] ✅ MIT License added
-- [x] ✅ Fixed main function to run server properly
-- [x] ✅ Added type hints and comprehensive docstrings
-- [x] ✅ Updated project metadata with proper description and keywords
-- [ ] 🔄 Create examples/ directory with demo scripts and sample images
-- [x] ✅ Add basic unit tests for core functionality
-- [ ] 🔄 Implement proper error handling and input validation
+- [ ] Add standalone demo
+- [ ] Measure pose matching performance and compare between at least two different agents and two different robot models
 
-### ⚠️ Important
-- [x] ✅ Add pre-commit hooks, ruff formatting
-- [x] ✅ Set up GitHub Actions for CI/CD (testing, linting, formatting)
-
-### ✨ Nice-to-Have
-- [x] ✅ Multi-robot support for different models
-- [ ] 🔄 Web interface for interactive robot control
 
 ## 🤝 Contributing
 
