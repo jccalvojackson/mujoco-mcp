@@ -7,7 +7,7 @@ This demo evaluates AI agents' ability to match robot joint configurations from 
 The `evaluate_directly.py` script:
 
 - Creates a simulated robot environment using MuJoCo
-- Generates reference images from random joint configurations  
+- Generates reference images from random joint configurations
 - Uses AI agents (Claude or Gemini) to predict joint positions from the images
 - Measures accuracy by comparing end-effector poses
 - Logs results to Weights & Biases (wandb)
@@ -36,7 +36,7 @@ Then edit `.env` to include:
 # Anthropic API key for Claude models
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
-# Google API key for Gemini models  
+# Google API key for Gemini models
 GOOGLE_API_KEY=your_google_api_key_here
 
 # Weights & Biases API key for experiment tracking
@@ -90,7 +90,7 @@ set -a; source .env; set +a
 # Run with Claude
 uv run examples/evaluate_directly.py --model-class claude --ground-truth-seed 42
 
-# Run with Gemini  
+# Run with Gemini
 uv run examples/evaluate_directly.py --model-class gemini --ground-truth-seed 42
 ```
 
@@ -126,7 +126,7 @@ uv run examples/evaluate_directly.py --help
 Available options:
 
 - `--robot-name`: Robot model to use (default: "so_arm100_mj_description")
-- `--model-class`: AI model to use ("claude" or "gemini", default: "gemini")  
+- `--model-class`: AI model to use ("claude" or "gemini", default: "gemini")
 - `--ground-truth-source`: Data source ("simulated" or "real", default: "simulated")
 - `--ground-truth-seed`: Random seed for reproducible experiments (default: 42)
 
