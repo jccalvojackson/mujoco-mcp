@@ -197,10 +197,11 @@ def get_end_effector_pose(
 
 
 def main(
-    robot_name: str,
-    model_class: ModelClass,
-    ground_truth_source: GroundTruthSource,
-    ground_truth_seed: int,
+    *,
+    robot_name: str = "so_arm100_mj_description",
+    model_class: ModelClass = ModelClass.GEMINI,
+    ground_truth_source: GroundTruthSource = GroundTruthSource.SIMULATED,
+    ground_truth_seed: int = 42,
     # ideally we would set a seed parameter for both gemini and claude
 ):
     run = wandb.init(
