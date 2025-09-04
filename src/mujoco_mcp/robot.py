@@ -7,6 +7,8 @@ import numpy as np
 from loguru import logger
 from pydantic import BaseModel, Field
 
+from mujoco_mcp.config import Config
+
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
@@ -83,12 +85,13 @@ def _get_component_names(model: mujoco.MjModel, component_type: str) -> list[str
 class MujocoRobot:
     def __init__(
         self,
-        xml_path: str,
+        config: Config,
         render_config: RenderConfig = RenderConfig(),
         home_position: np.ndarray | None = None,
         link_base: int = 0,
     ):
-        self._model = mujoco.MjModel.from_xml_path(xml_path)
+        self._config = config
+        self._model = mujoco.MjModel.from_xml_path(config.robot_mjcf_path)
         self._model.vis.global_.offwidth = render_config.width
         self._model.vis.global_.offheight = render_config.height
         self._data = mujoco.MjData(self._model)
@@ -105,7 +108,7 @@ class MujocoRobot:
         )
         self._joint_ranges: np.ndarray = np.stack(
             [self._model.joint(joint).range for joint in self._joints]
-        )
+        ).T
         logger.info(f"Joint bounds: {self.joint_bounds}")
         self._viewer: Optional[mujoco.Renderer] = None
         self._render_config: RenderConfig = render_config
@@ -143,10 +146,19 @@ class MujocoRobot:
         return self._joints
 
     @property
+    def config(self) -> Config:
+        return self._config
+
+    @classmethod
+    def from_robot_name(cls, robot_name: str) -> "MujocoRobot":
+        config = Config(robot_name=robot_name)
+        return cls(config)
+
+    @property
     def joint_bounds(self) -> dict[str, tuple[float, float]]:
         return {
             joint: (low.item(), high.item())
-            for joint, (low, high) in zip(self._joints, self._joint_ranges)
+            for joint, (low, high) in zip(self._joints, self._joint_ranges.T)
         }
 
     def reset(self):
@@ -158,7 +170,7 @@ class MujocoRobot:
             raise ValueError(
                 f"State must have {len(self.joint_names)} values, got {len(state)}"
             )
-        state = np.clip(state, self._joint_ranges[:, 0], self._joint_ranges[:, 1])
+        state = np.clip(state, *self._joint_ranges)
         self._data.qpos[self._joint_ids] = state
         mujoco.mj_forward(self._model, self._data)
 
@@ -169,8 +181,7 @@ class MujocoRobot:
             )
         """Apply the action to the robot."""
         # TODO: apply action during an amount of time on a loop
-        lower_bounds, upper_bounds = self._joint_ranges.T
-        action = np.clip(action, lower_bounds, upper_bounds)
+        action = np.clip(action, *self._joint_ranges)
         self._data.ctrl[self._actuator_ids] = action
         mujoco.mj_step(self._model, self._data)
 
@@ -183,11 +194,11 @@ class MujocoRobot:
 if __name__ == "__main__":
     import numpy as np
     from PIL import Image
-    from robot_descriptions import so_arm100_mj_description
 
-    robot = MujocoRobot(so_arm100_mj_description.MJCF_PATH)
+    robot = MujocoRobot.from_robot_name("so_arm100_mj_description")
     action = np.array([np.pi / 2, np.pi / 2, 0, 0, 0, 0])
     robot.set_state(action)
+    body_name = "Fixed_Jaw"
     logger.info(f"Robot state: {robot.get_robot_state()}")
     images = robot.render()
     for i, image in enumerate(images):

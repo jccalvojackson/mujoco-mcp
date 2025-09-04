@@ -1,22 +1,21 @@
 import mujoco
-import numpy as np
 from mcp.server.fastmcp import FastMCP, Image
 from PIL import Image as PILImage
 
 from mujoco_mcp.config import config
+from mujoco_mcp.image_utils import get_images_as_grid
 from mujoco_mcp.robot import MujocoRobot
 
-robot = MujocoRobot(config.robot_mjcf_path)
-spec = mujoco.MjSpec.from_file(config.robot_mjcf_path)
+robot = MujocoRobot(config)
 
 
 mujoco_mcp_server = FastMCP("Robot State Control")
 
 
-def _get_kinematic_chain_info() -> str:
+def _get_kinematic_chain_info(mjcf_path: str) -> str:
     """Extract kinematic chain information from the robot model."""
     try:
-        spec = mujoco.MjSpec.from_file(config.robot_mjcf_path)
+        spec = mujoco.MjSpec.from_file(mjcf_path)
         bodies = spec.worldbody.bodies
 
         # Build kinematic chain description
@@ -100,49 +99,13 @@ def _get_robot_description(robot: MujocoRobot) -> str:
     )
 
 
-def _get_images_as_grid(
-    images: list[np.ndarray],
+def pil_to_mcp_image(
+    image: PILImage,
 ) -> Image:
-    """Concatenate multiple images in a grid layout with WebP compression."""
-    import math
-
-    num_images = len(images)
-    if num_images == 0:
-        raise ValueError("No images provided")
-
-    MAX_IMAGES = 9
-    if num_images > MAX_IMAGES:
-        raise ValueError(f"Too many images: {num_images} > {MAX_IMAGES}")
-
-    # Calculate grid dimensions for a more square layout
-    if num_images <= 4:
-        cols = min(2, num_images)
-        rows = math.ceil(num_images / cols)
-    else:
-        # For 5+ images, prefer 3 columns for better aspect ratio
-        cols = 3
-        rows = math.ceil(num_images / cols)
-
-    # Get dimensions of individual images
-    img_height, img_width = images[0].shape[:2]
-
-    # Create the grid canvas
-    grid_width = cols * img_width
-    grid_height = rows * img_height
-    concat_image: PILImage = PILImage.new("RGB", (grid_width, grid_height))
-
-    # Place images in grid
-    for i, image in enumerate(images):
-        row = i // cols
-        col = i % cols
-        x_pos = col * img_width
-        y_pos = row * img_height
-        concat_image.paste(PILImage.fromarray(image), (x_pos, y_pos))
-
     from io import BytesIO
 
     buffer = BytesIO()
-    concat_image.save(buffer, format="WEBP", quality=80, optimize=True)
+    image.save(buffer, format="WEBP", quality=80, optimize=True)
     return Image(data=buffer.getvalue(), format="webp")
 
 
@@ -152,15 +115,20 @@ def set_robot_state_and_render(state: list[float]) -> Image:
     robot.set_state(state)
     images = robot.render()
     robot.reset()  # to explicitly make server stateless
-    return _get_images_as_grid(images)
+    pil_image = get_images_as_grid(images)
+    return pil_to_mcp_image(pil_image)
 
 
 @mujoco_mcp_server.prompt(title="Achieve pose")
 def achieve_pose() -> str:
+    return get_achieve_pose_prompt(robot)
+
+
+def get_achieve_pose_prompt(robot: MujocoRobot) -> str:
     # Get robot-specific information
     joint_bounds = robot.joint_bounds
     joint_names = robot.joint_names
-    kinematic_chain = _get_kinematic_chain_info()
+    kinematic_chain = _get_kinematic_chain_info(robot.config.robot_mjcf_path)
     joint_analysis = _get_enhanced_joint_analysis(robot)
 
     # Analyze joint characteristics for pose matching guidance
