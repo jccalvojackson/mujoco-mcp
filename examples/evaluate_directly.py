@@ -4,6 +4,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
+import typer
 import weave
 from agno.agent import Agent
 from agno.media import Image, ImageArtifact
@@ -25,19 +26,25 @@ WANDB_PROJECT_NAME = "evaluate_joint_configuration_agent"
 weave.init(WANDB_PROJECT_NAME)
 
 
-class ModelName(StrEnum):
-    CLAUDE = "claude-sonnet-4-20250514"
-    GEMINI = "gemini-2.5-pro"
+class ModelClass(StrEnum):
+    CLAUDE = "claude"
+    GEMINI = "gemini"
 
 
-def get_model(model_name: ModelName) -> Claude | Gemini:
-    match model_name:
-        case ModelName.CLAUDE:
-            return Claude(id=model_name)
-        case ModelName.GEMINI:
-            return Gemini(id=model_name)
+MODEL_NAMES = {
+    ModelClass.CLAUDE: "claude-sonnet-4-20250514",
+    ModelClass.GEMINI: "gemini-2.5-pro",
+}
+
+
+def get_model(model_class: ModelClass) -> Claude | Gemini:
+    match model_class:
+        case ModelClass.CLAUDE:
+            return Claude(id=MODEL_NAMES[model_class])
+        case ModelClass.GEMINI:
+            return Gemini(id=MODEL_NAMES[model_class])
         case _:
-            raise ValueError(f"Model name {model_name} not supported")
+            raise ValueError(f"Model name {model_class} not supported")
 
 
 class MujocoRobotTools(Toolkit):
@@ -78,9 +85,9 @@ class JointConfigurationAgent:
     def __init__(
         self,
         robot: MujocoRobot,
-        model_name: ModelName,
+        model_class: ModelClass,
     ):
-        model = get_model(model_name)
+        model = get_model(model_class)
         instructions = get_achieve_pose_prompt(robot)
         tools = MujocoRobotTools(robot)
         self.agent = Agent(
@@ -191,7 +198,7 @@ def get_end_effector_pose(
 
 def main(
     robot_name: str,
-    model_name: ModelName,
+    model_class: ModelClass,
     ground_truth_source: GroundTruthSource,
     ground_truth_seed: int,
     # ideally we would set a seed parameter for both gemini and claude
@@ -200,7 +207,7 @@ def main(
         project=WANDB_PROJECT_NAME,
         config={
             "robot_name": robot_name,
-            "model_name": model_name,
+            "model_class": model_class,
             "ground_truth_source": ground_truth_source,
             "ground_truth_seed": ground_truth_seed,
         },
@@ -213,7 +220,7 @@ def main(
         )
     else:
         raise NotImplementedError("Real ground truth is not implemented yet")
-    agent = JointConfigurationAgent(robot, model_name)
+    agent = JointConfigurationAgent(robot, model_class)
     predicted_joint_positions = agent.get_joint_positions(image_paths)
 
     metric_value = end_effector_pose_distance(
@@ -226,9 +233,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(
-        robot_name="so_arm100_mj_description",
-        model_name=ModelName.GEMINI,
-        ground_truth_source=GroundTruthSource.SIMULATED,
-        ground_truth_seed=42,
-    )
+    typer.run(main)

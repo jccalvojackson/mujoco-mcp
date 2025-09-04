@@ -966,6 +966,7 @@ demo = [
     { name = "anthropic" },
     { name = "fastapi" },
     { name = "google-genai" },
+    { name = "typer" },
     { name = "weave" },
 ]
 dev = [
@@ -991,6 +992,7 @@ demo = [
     { name = "anthropic", specifier = ">=0.64.0" },
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "google-genai", specifier = ">=1.32.0" },
+    { name = "typer", specifier = ">=0.16.1" },
     { name = "weave", specifier = ">=0.52.5" },
 ]
 dev = [
