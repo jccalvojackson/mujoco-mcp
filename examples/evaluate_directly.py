@@ -21,7 +21,7 @@ from mujoco_mcp.image_utils import get_images_as_grid
 from mujoco_mcp.robot import MujocoRobot
 from mujoco_mcp.server import get_achieve_pose_prompt, pil_to_mcp_image
 
-WANDB_PROJECT_NAME = "evaluate_joint_configuration_agent"
+WANDB_PROJECT_NAME = "evaluate_joint_configuration_ai_agent"
 
 weave.init(WANDB_PROJECT_NAME)
 
@@ -204,7 +204,9 @@ def main(
     ground_truth_seed: int = 42,
     # ideally we would set a seed parameter for both gemini and claude
 ):
+    wandb_settings = wandb.Settings(console="off")
     run = wandb.init(
+        settings=wandb_settings,
         project=WANDB_PROJECT_NAME,
         config={
             "robot_name": robot_name,
@@ -230,6 +232,10 @@ def main(
         predicted_joint_positions,
     )
     run.log({"end_effector_pose_distance": metric_value})
+    # sleep for 30 seconds to avoid rate limiting
+    import time
+
+    time.sleep(30)
     run.finish()
 
 
