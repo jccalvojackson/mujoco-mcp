@@ -22,6 +22,7 @@ from mujoco_mcp.robot import MujocoRobot
 from mujoco_mcp.server import get_achieve_pose_prompt, pil_to_mcp_image
 
 WANDB_PROJECT_NAME = "evaluate_joint_configuration_ai_agent"
+MAX_NUMBER_OF_TOOL_CALLS = 10
 
 weave.init(WANDB_PROJECT_NAME)
 
@@ -95,6 +96,7 @@ class JointConfigurationAgent:
             tools=[tools],
             instructions=instructions,
             telemetry=False,
+            tool_call_limit=MAX_NUMBER_OF_TOOL_CALLS,
         )
 
     @weave.op()
