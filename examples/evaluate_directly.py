@@ -96,7 +96,7 @@ class JointConfigurationAgent:
             tools=[tools],
             instructions=instructions,
             telemetry=False,
-            tool_call_limit=MAX_NUMBER_OF_TOOL_CALLS,
+            tool_call_limit=MAX_NUMBER_OF_TOOL_CALLS,  # Very important!!
         )
 
     @weave.op()
