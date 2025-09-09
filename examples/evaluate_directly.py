@@ -212,8 +212,13 @@ def main(
     ground_truth_seed: int = 42,
     # ideally we would set a seed parameter for both gemini and claude
     wandb_project_name: str = WANDB_PROJECT_NAME,
+    #  wanted to have model_class: ModelClass | Literal["random"] = ModelClass.GEMINI,
+    #  but is not yet supported by typer https://github.com/fastapi/typer/pull/1148
+    #  so I'm just using a flag for now
+    random_prediction: bool = False,  # if True, the model is ignored and a random prediction is used. Meant as baseline
 ):
-    weave.init(wandb_project_name)
+    if not random_prediction:
+        weave.init(wandb_project_name)
     wandb_settings = wandb.Settings(console="off")
     run = wandb.init(
         settings=wandb_settings,
@@ -233,8 +238,14 @@ def main(
         )
     else:
         raise NotImplementedError("Real ground truth is not implemented yet")
-    agent = JointConfigurationAgent(robot, model_class)
-    predicted_joint_positions = agent.get_joint_positions(image_paths)
+    if random_prediction:
+        logger.warning("Using random prediction")
+        predicted_joint_positions = np.random.uniform(
+            *robot._joint_ranges,
+        )
+    else:
+        agent = JointConfigurationAgent(robot, model_class)
+        predicted_joint_positions = agent.get_joint_positions(image_paths)
 
     metric_value = end_effector_pose_distance(
         robot,
@@ -243,9 +254,11 @@ def main(
     )
     run.log({"end_effector_pose_distance": metric_value})
     # sleep for 30 seconds to avoid rate limiting
-    import time
+    if model_class == ModelClass.CLAUDE and not random_prediction:
+        import time
 
-    time.sleep(30)
+        logger.info("Sleeping for 30 seconds to avoid rate limiting")
+        time.sleep(30)
     run.finish()
 
 
