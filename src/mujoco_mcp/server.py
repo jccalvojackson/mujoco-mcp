@@ -110,7 +110,7 @@ def get_achieve_pose_prompt(robot: MujocoRobot) -> str:
 
 **Kinematic Chain Impact**:
 - **Base joints** (early in chain): Small changes affect entire arm - massive leverage
-- **Middle joints**: Create major structural changes in arm configuration  
+- **Middle joints**: Create major structural changes in arm configuration
 - **End-effector joints** (late in chain): Fine-tune final positioning but still crucial
 
 **Joint Exploration**:
