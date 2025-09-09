@@ -24,8 +24,6 @@ from mujoco_mcp.server import get_achieve_pose_prompt, pil_to_mcp_image
 WANDB_PROJECT_NAME = "evaluate_joint_configuration_ai_agent"
 MAX_NUMBER_OF_TOOL_CALLS = 10
 
-weave.init(WANDB_PROJECT_NAME)
-
 
 class ModelClass(StrEnum):
     CLAUDE = "claude"
@@ -184,13 +182,21 @@ def end_effector_pose_distance(
     return np.linalg.norm(ground_truth_end_effector_pose - predicted_end_effector_pose)
 
 
+END_EFFECTOR_BODY_NAMES = dict(
+    so_arm100_mj_description="Fixed_Jaw",
+    fr3_mj_description="fr3_link7",
+)
+
+
 def get_end_effector_pose(
     robot: MujocoRobot,
     joint_positions: list[float],
 ) -> np.ndarray:
-    if robot.config.robot_name != "so_arm100_mj_description":
-        raise ValueError("Only so_arm100_mj_description is supported for now")
-    end_effector_body_name = "Fixed_Jaw"
+    if robot.config.robot_name not in END_EFFECTOR_BODY_NAMES:
+        raise ValueError(
+            f"Only {list(END_EFFECTOR_BODY_NAMES.keys())} are supported for now"
+        )
+    end_effector_body_name = END_EFFECTOR_BODY_NAMES[robot.config.robot_name]
     robot.set_state(joint_positions)
     position = robot._data.body(end_effector_body_name).xpos.copy()
     quaternion = robot._data.body(end_effector_body_name).xquat.copy()
@@ -205,11 +211,13 @@ def main(
     ground_truth_source: GroundTruthSource = GroundTruthSource.SIMULATED,
     ground_truth_seed: int = 42,
     # ideally we would set a seed parameter for both gemini and claude
+    wandb_project_name: str = WANDB_PROJECT_NAME,
 ):
+    weave.init(wandb_project_name)
     wandb_settings = wandb.Settings(console="off")
     run = wandb.init(
         settings=wandb_settings,
-        project=WANDB_PROJECT_NAME,
+        project=wandb_project_name,
         config={
             "robot_name": robot_name,
             "model_class": model_class,
