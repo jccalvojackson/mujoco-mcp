@@ -228,6 +228,7 @@ def main(
             "model_class": model_class,
             "ground_truth_source": ground_truth_source,
             "ground_truth_seed": ground_truth_seed,
+            "random_prediction": random_prediction,
         },
     )
     robot = MujocoRobot.from_robot_name(robot_name)
