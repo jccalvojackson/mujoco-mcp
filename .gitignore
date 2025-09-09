@@ -287,3 +287,6 @@ secrets.json
 
 # Reference directory
 references/
+
+# Wandb
+wandb/
